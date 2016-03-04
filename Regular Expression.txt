@@ -1,0 +1,223 @@
+User html-tidy:  http://www.html-tidy.org/ and http://api.html-tidy.org/tidy/quickref_5.1.25.html
+
+<p> was used as a <br> so we MAY need to replace <p> with <br> before the tidy. That may help with keeping things properly nested!
+
+    Config file to SET LINE WRAP TO:
+      wrap: 0
+      wrap-sections: 0
+
+Make a batch file with following commands: (Being sure to use config file!)(src: https://lists.w3.org/Archives/Public/html-tidy/2011AprJun/0005.html)
+
+Make sure terminal is open to proper directory!
+
+for %a in (*.html) do tidy %a > batchTest\%a
+
+with proper config it looks like this(right?):
+
+for %a in (*.html) do tidy -config 0tidyConfig.txt %a > batchTest2\%a
+
+or on CLI like:
+
+for %a in (*.html) do tidy --wrap 0 --wrap-sections 0 %a > batchTest2\%a
+
+Some were outputting 0kb sized files. This was caused by broken tags and unclosed src strings. used error tracking option of html tidy to track them down and fix.
+
+Sort the tags by class so they're in correct order when turned into CSV -> Title, Body/Related, Call #, MetaData
+See: http://jsfiddle.net/Afbrt/
+  and https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+  and http://trentrichardson.com/2013/12/16/sort-dom-elements-jquery/
+Use data-sortby="1" for every <dt> and data-sortby="3" for each <dd> THEN change <b> call number tags to <dd sortby="9">
+(We will use weighting more than a specific sort.)
+<dt data-sortby="1">Movie Title(previously</dt>
+<dd data-sortby="2">DVD Call Numbers</dd>
+<dd data-sortby="3">VHS Call Numbers</dd>
+<dd data-sortby="4">Added metadata</dd>
+<dd data-sortby="5">Added metadata</dd>
+<dd data-sortby="6">Added metadata</dd>
+<dd data-sortby="7">Added metadata</dd>
+<dd data-sortby="8">Citation Body</dd>
+<dd data-sortby="9">Secondary List inside citation</dd>
+
+
+THEN change the DL into TR and DT/DD into TD
+THEN EXPORT
+
+Export to CSV? http://jsfiddle.net/terryyounghk/kpegu/
+Personal JS for adding header metadata: http://codepen.io/jon-is-learning/pen/rOpEaE?editors=101
+  NOTE::: DOUBLE CHECK IT ADDS TAGS APPROPRIATELY AS WELL. Maybe tags with classes? Then can move list children around so classes for metadata are always last?
+JS for adding tags to call numbers and giving them a class
+
+IN BROWSER: jquery will auto add the additional
+
+Regular Expression
+
+Finding Call Numbers:
+
+
+(THIS IS UPDATE IN THE .js FILE)
+([vV]ideo\/C|DVD|v\/c|sound\/d|s\/d)(\s?)(x|z|(999)?)\s?:?(\s?)(\d{1,4})
+
+The oskicat URL format: http://oskicat.berkeley.edu/search~S1?/eDVD+7164
+
+Will need to read up on capturing groups to concatenate string properly: http://stackoverflow.com/questions/12219978/regex-add-in-the-middle
+
+Remove Span/Font/meta tags:
+
+<[/]?(span|font|meta)[^>]*>
+
+Remove inline styles from tags:
+
+(style)="[^>]*"
+
+Adapt above method for names and ids as these were for anchor tags/links that will not need to be ported to Drupal.
+Excess </a> tags should be ignored at render without trouble.
+
+Remove sidebar:
+
+<td width="100"><img src="http://www.lib.berkeley.edu/MRC/sideid.gif"></td>
+
+<tr>
+<td colspan="2"><img src="http://www.lib.berkeley.edu/MRC/dotrule1.gif"></td>
+</tr>
+
+<td valign="top"><img src="http://www.lib.berkeley.edu/MRC/sideclap.gif"><br>
+<a href="http://www.lib.berkeley.edu/MRC/level2.html"><img src="http://www.lib.berkeley.edu/MRC/side-home.gif" border="0"></a><br>
+<a href="http://www.lib.berkeley.edu/MRC/access.html"><img src="http://www.lib.berkeley.edu/MRC/side-access.gif" border="0"></a><br>
+<img src="http://www.lib.berkeley.edu/MRC/side-coll.gif" border="0"><br>
+<a href="http://www.lib.berkeley.edu/MRC/VideographyMenu.html"><img src="http://www.lib.berkeley.edu/MRC/side-docu.gif" border="0"></a><br>
+<a href="http://www.lib.berkeley.edu/MRC/moviedb.html"><img src="http://www.lib.berkeley.edu/MRC/side-movie.gif" border="0"></a><br>
+<a href="http://www.lib.berkeley.edu/MRC/tv.html"><img src="http://www.lib.berkeley.edu/MRC/side-tv.gif" border="0"></a><br>
+<a href="http://www.lib.berkeley.edu/MRC/FilmBibMenu.html"><img src="http://www.lib.berkeley.edu/MRC/side-cat.gif" border="0"></a><br>
+<a href="http://www.lib.berkeley.edu/MRC/filmstudies/index.html"><img src="http://www.lib.berkeley.edu/MRC/side-filmst.gif" border="0"></a><br></td>
+
+Remove footer:
+
+<img src="http://www.lib.berkeley.edu/MRC/dotrule1.gif">
+
+<center><br>
+<br>
+Copyright (C) 1996 by the Library, University of California, Berkeley. <em>All rights reserved.</em><br>
+Document maintained on server: http://www.lib.berkeley.edu/ by<br>
+<a href="http://www.lib.berkeley.edu/MRC/commentform.html">The Media Resources Center.</a><br>
+
+Find and replace image tags with their text: (HIGHEST SPECIFICITY TO LOWEST)
+
+ALSO !!! ---> INCLUDE FIXES FOR BROKEN HTML WHEN DOING THE BELOW i.e.:
+</dl>
+<dl>
+<dd><img ... /></dd>
+</dl>
+
+      OR
+
+<dl>
+<dd><img ... /></dd>
+</dl>
+
+      OR
+
+</dl>
+<dl>
+<dd><img ... />
+
+      OR
+
+</dl>
+<br>
+<img ... />
+
+
+      AND FINALLY
+
+<img ... />
+
+
+      SHOULD BECOME --->
+<dd data-sortby="9">Text Replacement</dd>
+
+---------------
+                <img [^>]*src="(http://www.lib.berkeley.edu/MRC/bhome.gif+)"[^>]*>
+                    --> turns into -->
+                DELETE IT
+
+---------------
+                <img [^>]*src="(http://www.lib.berkeley.edu/MRC/bbib.gif+)"[^>]*>
+                    --> turns into -->
+                Bibliography on this topic:
+
+
+
+DONE---------------
+                <img [^>]*src="(http://www.lib.berkeley.edu/MRC/sepbib.gif+)"[^>]*>
+                    --> turns into -->
+                <dd data-sortby="9">See separate bibliography of reviews and articles about this film</dd>
+
+
+DONE---------------
+                <img [^>]*src="(http://www.lib.berkeley.edu/MRC/bsavid.gif+)"[^>]*>
+                    --> turns into -->
+                <dd data-sortby="9">See also the following MRC Videographies:</dd>
+
+DONE---------------------
+
+    <img [^>]*src="(http://www.lib.berkeley.edu/MRC/bweb.gif+)"[^>]*>
+        --> turns into -->
+    <dd data-sortby="9">Related web sites:</dd>
+
+DONE---------------------
+
+<img [^>]*src="(http://www.lib.berkeley.edu/MRC/bsa.gif+)"[^>]*>
+    --> turns into -->
+<dd data-sortby="9">See also:</dd>
+
+DONE---------------------
+
+<img [^>]*src="(http://www.lib.berkeley.edu/MRC/btext.gif+)"[^>]*>
+    --> turns into -->
+<dd data-sortby="9">Full-text review from:</dd>
+
+DONE---------------------
+
+<img [^>]*src="(http://www.lib.berkeley.edu/MRC/brevs.gif+)"[^>]*>
+    --> turns into -->
+<dd data-sortby="9">Reviews and articles:</dd>
+
+DONE---------------------
+
+<img [^>]*src="(http://www.lib.berkeley.edu/MRC/artrev.gif+)"[^>]*>
+    --> turns into -->
+<dd data-sortby="9">Full-text of this article / review is available:</dd>
+
+DONE---------------------
+
+<img [^>]*src="(http://www.lib.berkeley.edu/MRC/bphoto.gif+)"[^>]*>
+    --> turns into -->
+<dd data-sortby="9">Photograph from this video</dd>
+
+DONE---------------------
+
+<img [^>]*src="(http://www.lib.berkeley.edu/MRC/diamond.gif+)"[^>]*>
+    --> turns into -->
+&#149;
+
+DONE---------------------
+
+<img [^>]*src="(http://www.lib.berkeley.edu/MRC/star.gif+)"[^>]*>
+    --> turns into -->
+&#149;
+
+DONE---------------------
+
+<img [^>]*src="(http://www.lib.berkeley.edu/MRC/tv.gif+)"[^>]*>
+    --> turns into -->
+&#149;
+
+DONE---------------------
+
+
+Replace the &# start for character encoding with â€¢ which became  Ã¢â‚¬Â¢
+Replace it back to normal with excel and let drupal handle the encoding.
+
+Replaced <a with Ѭ which became  Ñ¬
+
+Replaced </a> with Ж which became Ð–

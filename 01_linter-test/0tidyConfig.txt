@@ -1,0 +1,3 @@
+//config file for HTML tidy to remove line wrap. (Line wrap messes up our regular expression fixing in later steps)
+
+wrap: 0
