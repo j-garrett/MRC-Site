@@ -1,5 +1,37 @@
 $(document).ready(function(){
+
+//function isn't playing nice with turning lists into tables.
+(function() { //Move <dd data-sortby="9" inside of list items:
+  $('button').remove();
+  //find using data attribute and limit scope to <dl>
+  //iterate over each result for scope purposes
+  var element = $('dl').has('dd[data-sortby=9]').each(function(index) {
+    var currEle = $(this);
+    //find the <dl> that this additional cell needs to attach to
+    //this keeps header related information safely out of the way
+    var elementPrev = currEle.prev('dl');
+    //lets look up and down this scope for any siblings that aren't <dl> and should be added into element. (<dl> implies it is a different citation. if the <dl> has the data-sortby it will still be grabbed by parent function)
+    var sibPrev = currEle.prevUntil('dl');
+    var sibNext = currEle.nextUntil('dl');
+    //if previous is header then currEle can be deleted since we are only storing addtl info at the citation level
+    if( sibPrev.is(':header') ) {
+      currEle.remove();
+    }else { //if previous is not a header or a dl, then it can be wrapped up in current element and concatenated.
+      sibPrev.appendTo(currEle);
+    };
+    if( sibNext.is(':header') ) {
+      //do nothing
+    }else { //if previous is not a header or a dl, then it can be wrapped up in current element and concatenated.
+      sibNext.appendTo(currEle);
+    };
+    //move the element into it's previous sibling. now the additional info is in the safety of the summary section!
+    currEle.appendTo(elementPrev);
+  });
+})();
+
+
 //NOW TURN CALL NUMBERS INTO PROPER LINKS!
+(function(){
   //create variable for regular expression that finds all call numbers
   var callNumberSearch = new RegExp(/(video\/c|video\/d|vhs|dvd|v\/c|sound\/c|sound\/d|s\/d|s\/c)(\s|.?)(x|z|(999)|(mm)?)\s?:?(\s?)(\d{1,4})/ig);
   //turn DOM into array so you can iterate over it
@@ -47,6 +79,7 @@ $(document).ready(function(){
       $(this).append('</dd><dd>'+newCallElem+'</dd>');
     }
   });
+})();
 
   //use jQuery to add metadata
   $('dl').each(function(i){ //each <dt> will look up the dom for previous header elements so they can be added to the <dt>'s metadata
@@ -65,7 +98,7 @@ $(document).ready(function(){
   var pageTitle = $('body').find('h1').text();
   $('body').find('h1').replaceWith('<dl><dd>'+pageTitle+'</dd></dl>');
 
-
+/*
 //Transform LISTS into TABLES for eventual export
   $('dl').replaceWith(function(){
     return $("<tr>", {html: $(this).html()});
@@ -76,6 +109,7 @@ $(document).ready(function(){
   $('dd').replaceWith(function(){
     return $("<td>", {html: $(this).html()});
   });
+*/
 //Add everything to a table.
 //Need to copy all items inside #dvData into a <table> (this should be pretty much the whole page...)
 //first, get all of the children of #dvData and set it to a variable for later use
