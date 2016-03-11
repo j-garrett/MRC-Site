@@ -1,11 +1,11 @@
 $(document).ready(function(){
 
-//function isn't playing nice with turning lists into tables.
-(function() { //Move <dd data-sortby="9" inside of list items:
-  $('button').remove();
+//best practice has scope set to function.
+(function() {
+  //Move <dd data-sortby="9" inside of list items:
   //find using data attribute and limit scope to <dl>
   //iterate over each result for scope purposes
-  var element = $('dl').has('dd[data-sortby=9]').each(function(index) {
+  var element = $('dl').not( $( 'dl' ).has( 'dt' ) ).has('dd[data-sortby=9]').each(function(index) {
     var currEle = $(this);
     //find the <dl> that this additional cell needs to attach to
     //this keeps header related information safely out of the way
@@ -24,16 +24,50 @@ $(document).ready(function(){
     }else { //if previous is not a header or a dl, then it can be wrapped up in current element and concatenated.
       sibNext.appendTo(currEle);
     };
-    //move the element into it's previous sibling. now the additional info is in the safety of the summary section!
-    currEle.appendTo(elementPrev);
+    //move the element into it's previous sibling. make sure it's nested in <dd> tag!
+    //now the additional info is in the safety of the summary section!
+    currEle.appendTo(elementPrev.children(':last'));
+    //replace tags so it isn't later messed up by global tag replacement and broken out again!
+    currEle.find('dd').replaceWith(function() {
+      return $("<li>", {html: $(this).html()});
+    });
+    currEle.find('dt').replaceWith(function() {
+      return $("<li>", {html: $(this).html()});
+    });
+    currEle.find('dl').replaceWith(function() {
+      return $("<ul>", {html: $(this).html()});
+    });
+    currEle.replaceWith(function() {
+      return $("<ul>", {html: $(this).html()});
+    });
+    //show change with color for troubleshooting
+    elementPrev.css('background-color', 'red');
   });
 })();
 
+//now concatenate multiple <dd> entries into a single <dd> entry with unordered lists!
+//look at all <dl>
+//if it has <dt> and 2+ <dd>
+//turn second+ <dd> to unordered list
+//nest unordered list inside first <dd>
+( function() {
+  var citEntry = $( 'dl' ).has( 'dt' ).each( function() {
+    if ( $( this ).find( 'dd' ).length > 1 ) {
+      var citEle = $( this );
+      var citEleDD = citEle.find( 'dd' );
+      citEleDD.not( ':first' ).replaceWith( function() {
+        return $( '<li>', { html: $(this).html() } );
+      });
+      citEle.find( 'li' ).appendTo( citEleDD );
+      citEleDD.find( 'li' ).wrap( '<ul>' );
+    };
+  });
+})();
 
 //NOW TURN CALL NUMBERS INTO PROPER LINKS!
 (function(){
   //create variable for regular expression that finds all call numbers
-  var callNumberSearch = new RegExp(/(video\/c|video\/d|vhs|dvd|v\/c|sound\/c|sound\/d|s\/d|s\/c)(\s|.?)(x|z|(999)|(mm)?)\s?:?(\s?)(\d{1,4})/ig);
+  var callNumberSearch = new RegExp(/(video\/c|video\/d|vhs|dvd|v\/c|sound\/c|sound\/d|s\/d|s\/c|compu\/d)(\s|.?)(x|z|(999)|(mm)?)\s?:?(\s?)(\d{1,4})/ig);
   //turn DOM into array so you can iterate over it
   var elems = document.getElementsByTagName('dd');
   //convert NodeList of all <dd> elements to an Array so we can iterate through
@@ -89,7 +123,7 @@ $(document).ready(function(){
           var returnEl = 'h' + ( i + 1 ); //filter argument for prevUntil()
           var metaAdd = $(this).prevUntil( upToEl , returnEl ).slice( 0 , 1 ).text(); //limit text added to only the closest header element
           if(metaAdd){ //check if there is a value to add so extra unique strings don't clutter
-              $(this).append( '<td>' + metaAdd + '</td>' ); //add header and unique string for future delimiter sort
+              $(this).append( '<dd>' + metaAdd + '</dd>' ); //add header and unique string for future delimiter sort
           }
       }
   });
@@ -98,7 +132,7 @@ $(document).ready(function(){
   var pageTitle = $('body').find('h1').text();
   $('body').find('h1').replaceWith('<dl><dd>'+pageTitle+'</dd></dl>');
 
-/*
+
 //Transform LISTS into TABLES for eventual export
   $('dl').replaceWith(function(){
     return $("<tr>", {html: $(this).html()});
@@ -109,7 +143,7 @@ $(document).ready(function(){
   $('dd').replaceWith(function(){
     return $("<td>", {html: $(this).html()});
   });
-*/
+
 //Add everything to a table.
 //Need to copy all items inside #dvData into a <table> (this should be pretty much the whole page...)
 //first, get all of the children of #dvData and set it to a variable for later use
