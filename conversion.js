@@ -1,5 +1,24 @@
 $(document).ready(function(){
 
+
+//now concatenate multiple <dd> entries into a single <dd> entry with unordered lists!
+//look at all <dl>
+//if it has <dt> and 2+ <dd>
+//turn second+ <dd> to unordered list
+//nest unordered list inside first <dd>
+( function() {
+  var citEntry = $( 'dl' ).has( 'dt' ).each( function() {
+    if ( $( this ).find( 'dd' ).length > 1 ) {
+      var citEle = $( this );
+      var citEleDD = citEle.find( 'dd' );
+      citEleDD.not( ':first' ).replaceWith( function() {
+        return $( '<li>', { html: $(this).html() } );
+      });
+      citEle.find( 'li' ).appendTo( citEleDD );
+      citEleDD.find( 'li' ).wrap( '<ul>' );
+    };
+  });
+})();
 //best practice has scope set to function.
 (function() {
   //Move <dd data-sortby="9" inside of list items:
@@ -45,24 +64,7 @@ $(document).ready(function(){
   });
 })();
 
-//now concatenate multiple <dd> entries into a single <dd> entry with unordered lists!
-//look at all <dl>
-//if it has <dt> and 2+ <dd>
-//turn second+ <dd> to unordered list
-//nest unordered list inside first <dd>
-( function() {
-  var citEntry = $( 'dl' ).has( 'dt' ).each( function() {
-    if ( $( this ).find( 'dd' ).length > 1 ) {
-      var citEle = $( this );
-      var citEleDD = citEle.find( 'dd' );
-      citEleDD.not( ':first' ).replaceWith( function() {
-        return $( '<li>', { html: $(this).html() } );
-      });
-      citEle.find( 'li' ).appendTo( citEleDD );
-      citEleDD.find( 'li' ).wrap( '<ul>' );
-    };
-  });
-})();
+
 
 //NOW TURN CALL NUMBERS INTO PROPER LINKS!
 (function(){
