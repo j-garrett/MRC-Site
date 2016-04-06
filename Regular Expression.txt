@@ -51,6 +51,11 @@ IN BROWSER: jquery will auto add the additional
 
 Regular Expression
 
+Delete bibliography links?:
+
+(<dd>Ѭ href="http:\/\/www.lib.berkeley.edu\/MRC\/.+">See separate bibliography of reviews and articles about this filmЖ<\/dd>)
+
+
 Finding Call Numbers:
 
 

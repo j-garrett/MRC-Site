@@ -1,5 +1,20 @@
 $(document).ready(function(){
 
+//delete any references/links to now out of date bibliographies
+//find all <dd> nodes with "See separate bibliography"
+//select node
+//destroy!
+(function(){
+  $("dd:contains('See separate bibliography')").remove();
+  //make sure no element is left behind to make extraneous table rows!
+  $('dl').each(function() {
+    var $this = $(this);
+    if($this.html().replace(/\s|&nbsp;/g, '').length == 0)
+        $this.remove();
+  });
+})();
+
+
 
 //now concatenate multiple <dd> entries into a single <dd> entry with unordered lists!
 //look at all <dl>
@@ -69,7 +84,7 @@ $(document).ready(function(){
 //NOW TURN CALL NUMBERS INTO PROPER LINKS!
 (function(){
   //create variable for regular expression that finds all call numbers
-  var callNumberSearch = new RegExp(/(video\/c|video\/d|vhs|dvd|v\/c|sound\/c|sound\/d|s\/d|s\/c|compu\/d)(\s|.?)(x|z|(999)|(mm)?)\s?:?(\s?)(\d{1,4})/ig);
+  var callNumberSearch = new RegExp(/(BANC CD|Phonotape|Phonodisc|video\/c|video\/d|video|vhs|dvd|v\/c|sound\/c|sound\/d|s\/d|s\/c|compu\/d|MUSI CA)(\s|.?)(x|z|(999)|(mm)?)\s?:?(\s?)(\d{1,4})/ig);
   //turn DOM into array so you can iterate over it
   var elems = document.getElementsByTagName('dd');
   //convert NodeList of all <dd> elements to an Array so we can iterate through
@@ -162,5 +177,6 @@ $(document).ready(function(){
 
 //now add the export button to the top of the page!
 $('body').prepend('<a href="#" class="export">Export Table data into Excel</a>');
+
 
 });
