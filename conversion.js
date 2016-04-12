@@ -21,7 +21,7 @@ $(document).ready(function(){
 //if it has <dt> and 2+ <dd>
 //turn second+ <dd> to unordered list
 //nest unordered list inside first <dd>
-( function() {
+(function() {
   var citEntry = $( 'dl' ).has( 'dt' ).each( function() {
     if ( $( this ).find( 'dd' ).length > 1 ) {
       var citEle = $( this );
@@ -132,41 +132,47 @@ $(document).ready(function(){
   });
 })();
 
-  //use jQuery to add metadata
-  $('dl').each(function(i){ //each <dt> will look up the dom for previous header elements so they can be added to the <dt>'s metadata
-      //LINTED HTML turned everything into individual lists so now we search using <dl> as base element.
-      for (var i = 0 ; i <=3 ; i++){ //loop through h1 - h3 elements using i variable to increment header size
-          var upToEl = 'h' + i; //selector argument for prevUntil()
-          var returnEl = 'h' + ( i + 1 ); //filter argument for prevUntil()
-          var metaAdd = $(this).prevUntil( upToEl , returnEl ).slice( 0 , 1 ).text(); //limit text added to only the closest header element
-          if(metaAdd){ //check if there is a value to add so extra unique strings don't clutter
-              $(this).append( '<dd>' + metaAdd + '</dd>' ); //add header and unique string for future delimiter sort
-          }
-      }
-  });
+//use jQuery to add metadata
+$('dl').each(function(i){ //each <dt> will look up the dom for previous header elements so they can be added to the <dt>'s metadata
+    //LINTED HTML turned everything into individual lists so now we search using <dl> as base element.
+    for (var i = 0 ; i <=3 ; i++){ //loop through h1 - h3 elements using i variable to increment header size
+        var upToEl = 'h' + i; //selector argument for prevUntil()
+        var returnEl = 'h' + ( i + 1 ); //filter argument for prevUntil()
+        var metaAdd = $(this).prevUntil( upToEl , returnEl ).slice( 0 , 1 ).text(); //limit text added to only the closest header element
+        if(metaAdd){ //check if there is a value to add so extra unique strings don't clutter
+            $(this).append( '<dd>' + metaAdd + '</dd>' ); //add header and unique string for future delimiter sort
+        }
+    }
+});
 //now that metadata has been added using the h tags, we need to wrap the page title, the head honcho h1 tag,
 //into a dl and dt tag so it can be converted into table form.
-  var pageTitle = $('body').find('h1').text();
-  $('body').find('h1').replaceWith('<dl><dd>'+pageTitle+'</dd></dl>');
+var pageTitle = $('body').find('h1').text();
+$('body').find('h1').replaceWith('<dl><dd>'+pageTitle+'</dd></dl>');
 
 
 //Transform LISTS into TABLES for eventual export
-  $('dl').replaceWith(function(){
-    return $("<tr>", {html: $(this).html()});
-  });
-  $('dt').replaceWith(function(){
-    return $("<td>", {html: $(this).html()});
-  });
-  $('dd').replaceWith(function(){
-    return $("<td>", {html: $(this).html()});
-  });
+$('dl').replaceWith(function(){
+  return $("<tr>", {html: $(this).html()});
+});
+$('dt').replaceWith(function(){
+  return $("<td>", {html: $(this).html()});
+});
+$('dd').replaceWith(function(){
+  return $("<td>", {html: $(this).html()});
+});
 
 //Add everything to a table.
 //Need to copy all items inside #dvData into a <table> (this should be pretty much the whole page...)
 //first, get all of the children of #dvData and set it to a variable for later use
   var newTableContents = $('#dvData').html();
 //delete all content in #dvData and add a table to it. this order keeps the content from being doubled
-  $('#dvData').empty().append("<table>");
+  $('#dvData').empty().prepend("<table>"
+      +"<tr><td>Source:</td><td>"
+      +window.location.pathname.replace("/03_jQuery-Test/","http://www.lib.berkeley.edu/MRC/")
+      +"</td></tr>"
+      +newTableContents
+      +"</table");
+/*
 //now find the child table of #dvData and add all the content back into it so it is clean and will be ready for export
   $('#dvData')
   .find("table")
@@ -174,7 +180,7 @@ $(document).ready(function(){
   .prepend("<tr><td>Source:</td><td>"+window.location.pathname.replace("/03_jQuery-Test/","http://www.lib.berkeley.edu/MRC/")+"</td></tr>")
 //add a final
   .append(newTableContents+"<tr><td>Export Successful and Complete</td></tr>");
-
+*/
 //now add the export button to the top of the page!
 $('body').prepend('<a href="#" class="export">Export Table data into Excel</a>');
 

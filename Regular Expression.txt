@@ -55,6 +55,19 @@ Delete bibliography links?:
 
 (<dd>Ѭ href="http:\/\/www.lib.berkeley.edu\/MRC\/.+">See separate bibliography of reviews and articles about this filmЖ<\/dd>)
 
+<dd data-sortby="9">Ѭ href="http:\/\/www.lib.berkeley.edu\/MRC\/.+"><img align="top" img="" src="http://www.lib.berkeley.edu/MRC/sepbib.gif" border="0">Ж
+
+add data-sortby="9"
+
+(<dl>
+<dd>â€¢149;Ѭ href="http:\/\/www.imdb.com\/title\/(.*)\/">Credits and other information from the Internet Movie DatabaseЖ<\/dd>
+<\/dl>)
+
+use backreference to second capture group with \2
+
+<dl>
+<dd data-sortby="9">â€¢149;Ѭ href="http:\/\/www.imdb.com\/title\/\2\/">Credits and other information from the Internet Movie DatabaseЖ<\/dd>
+<\/dl>
 
 Finding Call Numbers:
 
