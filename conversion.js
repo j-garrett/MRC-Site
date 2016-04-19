@@ -121,7 +121,7 @@ $(document).ready(function(){
         elemArray.push(newElem);
         //join array so it's nice and pretty
         //THIS WILL NEED TO CHANGE TO PROPER DELIMITER?
-        var newCallElem = elemArray.join(', ');
+        var newCallElem = elemArray.join('; ');
       }
       //delete call numbers in <dd>
       $(this).html(html.replace(callNumberSearch, ''));
@@ -165,10 +165,11 @@ $('dd').replaceWith(function(){
 //Need to copy all items inside #dvData into a <table> (this should be pretty much the whole page...)
 //first, get all of the children of #dvData and set it to a variable for later use
   var newTableContents = $('#dvData').html();
+  var originalUrl = window.location.pathname.replace("/03_jQuery-Test/","http://www.lib.berkeley.edu/MRC/");
 //delete all content in #dvData and add a table to it. this order keeps the content from being doubled
   $('#dvData').empty().prepend("<table>"
       +"<tr><td>Source:</td><td>"
-      +window.location.pathname.replace("/03_jQuery-Test/","http://www.lib.berkeley.edu/MRC/")
+      +"<a href=\"" + originalUrl + "\">" + originalUrl + "</a>"
       +"</td></tr>"
       +newTableContents
       +"</table");
