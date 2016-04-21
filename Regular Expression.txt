@@ -57,7 +57,7 @@ Delete bibliography links?:
 
 <dd data-sortby="9">Ѭ href="http:\/\/www.lib.berkeley.edu\/MRC\/.+"><img align="top" img="" src="http://www.lib.berkeley.edu/MRC/sepbib.gif" border="0">Ж
 
-(<p>)? ?(Ѭ href="http:\/\/www\.lib\.berkeley\.edu\/MRC\/)(.+)("><img src="http:\/\/www\.lib\.berkeley\.edu\/MRC\/sepbib.gif")(.*)(Ж) ?(<\/p>)?
+(<p>)? ?(Ѭ href="http:\/\/www\.lib\.berkeley\.edu\/MRC\/)(.+)("><img .*src="http:\/\/www\.lib\.berkeley\.edu\/MRC\/sepbib.gif")(.*)(Ж) ?(<\/p>)?
 
 add data-sortby="9"
 
